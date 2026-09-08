@@ -21,13 +21,43 @@ main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-wid
 .notice{padding:12px;border-radius:10px;background:#112944;color:#b9c9dd;font-size:13px;margin-bottom:13px}
 @media(max-width:950px){.side{display:none}main{margin-left:0;padding:20px}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.task{grid-template-columns:1.3fr .8fr .6fr auto}.task>*:nth-child(3),.task>*:nth-child(4),.task>*:nth-child(5){display:none}.week{overflow:auto;grid-template-columns:repeat(7,150px)}}
 @media(max-width:600px){.form{grid-template-columns:1fr}.full{grid-column:auto}header{align-items:flex-start}.cards{gap:8px}.card{padding:12px}}
-</style>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b1220">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+/* Navegación móvil */
+.mobile-nav{display:none}
+@media(max-width:950px){
+  main{padding-bottom:88px}
+  .mobile-nav{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    position:fixed;
+    left:8px;right:8px;bottom:8px;
+    z-index:50;
+    background:#091a2df2;
+    border:1px solid #24415e;
+    border-radius:16px;
+    padding:7px;
+    box-shadow:0 8px 30px #0008;
+    backdrop-filter:blur(10px);
+  }
+  .mobile-nav button{
+    border:0;background:transparent;color:#91a3ba;
+    padding:8px 3px;border-radius:11px;
+    font-size:10px;line-height:1.15;cursor:pointer;
+  }
+  .mobile-nav button span{display:block;font-size:18px;margin-bottom:3px}
+  .mobile-nav button.active{background:#244ba5;color:#fff}
+  .mobile-add{
+    position:fixed;right:18px;bottom:86px;z-index:49;
+    width:52px;height:52px;border:0;border-radius:50%;
+    background:#496cf0;color:#fff;font-size:25px;
+    box-shadow:0 6px 20px #0008;cursor:pointer
+  }
+}
+@media(max-width:420px){
+  .mobile-nav button{font-size:9px}
+  .mobile-nav button span{font-size:16px}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -43,6 +73,17 @@ main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-wid
 </div>
 <div class="quote">“No se trata de hacer todo hoy. Se trata de saber qué hacer hoy.”</div>
 </aside>
+
+
+<nav class="mobile-nav" id="mobileNav">
+  <button class="active" onclick="show('inicio',this)"><span>🏠</span>Inicio</button>
+  <button onclick="show('tareas',this)"><span>☑️</span>Tareas</button>
+  <button onclick="show('estudio',this)"><span>📚</span>Estudio</button>
+  <button onclick="show('horario',this)"><span>🗓️</span>Horario</button>
+  <button onclick="show('examenes',this)"><span>📝</span>Exámenes</button>
+  <button onclick="show('calendario',this)"><span>📅</span>Calendario</button>
+</nav>
+<button class="mobile-add" onclick="show('agregar')" aria-label="Agregar tarea">＋</button>
 
 <main>
 <section id="inicio" class="section">
@@ -74,7 +115,7 @@ main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-wid
 <div><label>Dificultad</label><select id="taskDiff"><option value="1">Baja</option><option value="2" selected>Media</option><option value="3">Alta</option></select></div>
 <div><label>Prioridad</label><select id="taskPriority"><option value="1">Baja</option><option value="2" selected>Media</option><option value="3">Alta</option></select></div>
 <div class="full"><label>Notas</label><textarea id="taskNotes" rows="3" placeholder="Detalles importantes..."></textarea></div>
-<div class="full"><button class="btn" onclick="addTask()">Guardar tarea</button></div>
+<div class="full"><button class="btn" style="width:100%" onclick="addTask()">Guardar tarea</button></div>
 </div></div>
 </section>
 
@@ -241,20 +282,28 @@ function renderCalendar(){
  for(let d=1;d<=num;d++){let date=new Date(y,m,d),key=iso(date),st=p.filter(x=>x.date===key),ex=exams.filter(e=>e.date===key);h+=`<div class="calday ${key===iso(today)?'today':''} ${ex.length?'exam':''} ${st.length?'study':''}">${d}${ex.length?'<small>📝 examen</small>':''}${st.length?`<small>🎯 ${st.reduce((s,x)=>s+x.hours,0).toFixed(1)}h</small>`:''}</div>`}calendar.innerHTML=h
 }
 function show(id,btn){
- document.querySelectorAll('main>section').forEach(s=>s.style.display='none');document.getElementById(id).style.display='block';
+ document.querySelectorAll('main>section').forEach(s=>s.style.display='none');
+ const target=document.getElementById(id);
+ if(target) target.style.display='block';
+
  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
- let idx={inicio:0,tareas:1,estudio:2,horario:3,examenes:4,calendario:5}[id];document.querySelectorAll('.nav button')[idx].classList.add('active');render()
+ document.querySelectorAll('.mobile-nav button').forEach(b=>b.classList.remove('active'));
+
+ const idx={inicio:0,tareas:1,estudio:2,horario:3,examenes:4,calendario:5}[id];
+ if(idx!==undefined){
+   const desktopBtns=document.querySelectorAll('.nav button');
+   const mobileBtns=document.querySelectorAll('.mobile-nav button');
+   if(desktopBtns[idx]) desktopBtns[idx].classList.add('active');
+   if(mobileBtns[idx]) mobileBtns[idx].classList.add('active');
+ } else if(id==='agregar'){
+   const mobileBtns=document.querySelectorAll('.mobile-nav button');
+   if(mobileBtns[1]) mobileBtns[1].classList.add('active');
+   const desktopBtns=document.querySelectorAll('.nav button');
+   if(desktopBtns[1]) desktopBtns[1].classList.add('active');
+ }
+ render()
 }
 render();
 </script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
-  });
-}
-</script>
-
 </body>
 </html>
