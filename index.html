@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TaskMind v3</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#071525;color:#eef4ff}
+.app{display:flex;min-height:100vh}.side{width:240px;position:fixed;inset:0 auto 0 0;background:#091a2d;border-right:1px solid #18334f;padding:25px 16px;z-index:2}
+.logo{font-size:25px;font-weight:800;margin:4px 10px 30px}.logo span{color:#708cff}.nav button{width:100%;padding:13px 14px;margin:3px 0;border:0;border-radius:12px;background:transparent;color:#b8c7da;text-align:left;font-size:14px;cursor:pointer}.nav button.active,.nav button:hover{background:#244ba5;color:#fff}.quote{position:absolute;bottom:25px;color:#7f91aa;font-size:12px;line-height:1.5;width:195px}
+main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-width:1180px;margin:auto}header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}h1{margin:0;font-size:30px}h2{font-size:18px;margin:0 0 15px}.muted{color:#91a3ba;font-size:13px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card,.panel{background:#0d2037;border:1px solid #193552;border-radius:17px}.card{padding:17px}.card b{display:block;font-size:25px;margin:7px 0}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:17px;margin-top:17px}.panel{padding:20px;margin-top:17px}
+.btn{border:0;border-radius:10px;padding:10px 14px;background:#496cf0;color:#fff;font-weight:700;cursor:pointer}.btn.secondary{background:#193552}.btn.danger{background:#613943}.btn:hover{filter:brightness(1.1)}
+.recommend{border:1px solid #426bd2;background:#102b50;border-radius:13px;padding:17px}.recommend b{font-size:17px}.plan div,.line{display:flex;justify-content:space-between;gap:10px;padding:11px 4px;border-bottom:1px solid #19304a}.plan div:last-child,.line:last-child{border:0}
+.task{display:grid;grid-template-columns:1.3fr .8fr .6fr .7fr 1fr auto;gap:9px;align-items:center;padding:13px 4px;border-bottom:1px solid #19304a;font-size:14px}.pill{padding:5px 9px;border-radius:20px;font-size:11px;display:inline-block}.low{background:#245943}.medium{background:#675424}.high{background:#683d48}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}label{display:block;color:#91a3ba;font-size:12px;margin-bottom:6px}input,select,textarea{width:100%;padding:11px;border-radius:9px;border:1px solid #27425e;background:#091a2d;color:white}textarea{resize:vertical}.full{grid-column:1/-1}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.daycol{background:#0a1c30;border:1px solid #193552;border-radius:12px;overflow:hidden}.dayhead{padding:10px;text-align:center;background:#102943;font-weight:700;font-size:13px}.slot{margin:7px;padding:8px;border-radius:8px;background:#17304b;font-size:11px}.slot.study{background:#263f83}.slot.exam{background:#613d49}.slot.free{background:#123d35;color:#8de0be}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}.calday{min-height:55px;padding:8px 5px;text-align:center;border-radius:8px;background:#102943;font-size:13px}.calday.today{outline:2px solid #5778e9}.calday.exam{background:#613d49}.calday.study{outline:2px solid #d6a83d}.calday small{display:block;font-size:10px;margin-top:4px;color:#e4bb55}
+.examcard{background:#0b1c30;border:1px solid #28445f;border-radius:12px;padding:14px;margin:8px 0}.examcard .top{display:flex;justify-content:space-between;gap:10px}.status{font-size:11px;color:#9eacc1}.progress{height:7px;background:#172e48;border-radius:20px;overflow:hidden;margin-top:9px}.progress i{display:block;height:100%;background:#5f7df0}.empty{text-align:center;color:#8295ad;padding:20px}
+.notice{padding:12px;border-radius:10px;background:#112944;color:#b9c9dd;font-size:13px;margin-bottom:13px}
+@media(max-width:950px){.side{display:none}main{margin-left:0;padding:20px}.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.task{grid-template-columns:1.3fr .8fr .6fr auto}.task>*:nth-child(3),.task>*:nth-child(4),.task>*:nth-child(5){display:none}.week{overflow:auto;grid-template-columns:repeat(7,150px)}}
+@media(max-width:600px){.form{grid-template-columns:1fr}.full{grid-column:auto}header{align-items:flex-start}.cards{gap:8px}.card{padding:12px}}
+</style>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b1220">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+<div class="app">
+<aside class="side">
+<div class="logo">🧠 <span>Task</span>Mind</div>
+<div class="nav">
+<button class="active" onclick="show('inicio',this)">🏠 Inicio</button>
+<button onclick="show('tareas',this)">☑️ Mis tareas</button>
+<button onclick="show('estudio',this)">📚 Plan de estudio</button>
+<button onclick="show('horario',this)">🗓️ Mi horario</button>
+<button onclick="show('examenes',this)">📝 Exámenes</button>
+<button onclick="show('calendario',this)">📅 Calendario</button>
+</div>
+<div class="quote">“No se trata de hacer todo hoy. Se trata de saber qué hacer hoy.”</div>
+</aside>
+
+<main>
+<section id="inicio" class="section">
+<header><div><h1>¡Hola! 👋</h1><div class="muted">Tu semana organizada entre tareas, clases y exámenes.</div></div><div class="muted" id="nowText"></div></header>
+<div class="cards">
+<div class="card">📋<b id="activeCount">0</b><span class="muted">Tareas pendientes</span></div>
+<div class="card">📝<b id="examCount">0</b><span class="muted">Exámenes próximos</span></div>
+<div class="card">📚<b id="studyHours">0h</b><span class="muted">Estudio planificado</span></div>
+<div class="card">🔥<b id="urgentCount">0</b><span class="muted">Prioridades altas</span></div>
+</div>
+<div class="grid">
+<div class="panel"><h2>🎯 ¿Qué deberías hacer hoy?</h2><div id="todayFocus"></div></div>
+<div class="panel"><h2>🧠 Próximos pasos</h2><div id="nextSteps" class="plan"></div></div>
+</div>
+<div class="panel"><h2>📊 Tu semana de estudio</h2><div id="weekSummary"></div></div>
+</section>
+
+<section id="tareas" class="section" style="display:none">
+<header><div><h1>☑️ Mis tareas</h1><div class="muted">TaskMind las reparte alrededor de tus clases y exámenes.</div></div><button class="btn" onclick="show('agregar')">+ Agregar tarea</button></header>
+<div class="panel"><div id="tasksList"></div></div>
+</section>
+
+<section id="agregar" class="section" style="display:none">
+<header><div><h1>➕ Nueva tarea</h1><div class="muted">Añade los datos y TaskMind buscará huecos en tu semana.</div></div></header>
+<div class="panel"><div class="form">
+<div class="full"><label>Tarea</label><input id="taskName" placeholder="Ej. Resolver ejercicios de matemática"></div>
+<div><label>Fecha de entrega</label><input id="taskDue" type="date"></div>
+<div><label>Tiempo total</label><select id="taskTime"><option value=".5">30 min</option><option value="1">1 hora</option><option value="1.5">1.5 horas</option><option value="2">2 horas</option><option value="3">3 horas</option><option value="4">4 horas</option><option value="6">6 horas</option></select></div>
+<div><label>Dificultad</label><select id="taskDiff"><option value="1">Baja</option><option value="2" selected>Media</option><option value="3">Alta</option></select></div>
+<div><label>Prioridad</label><select id="taskPriority"><option value="1">Baja</option><option value="2" selected>Media</option><option value="3">Alta</option></select></div>
+<div class="full"><label>Notas</label><textarea id="taskNotes" rows="3" placeholder="Detalles importantes..."></textarea></div>
+<div class="full"><button class="btn" onclick="addTask()">Guardar tarea</button></div>
+</div></div>
+</section>
+
+<section id="estudio" class="section" style="display:none">
+<header><div><h1>📚 Plan de estudio</h1><div class="muted">Sesiones creadas según tus clases, tareas y exámenes.</div></div></header>
+<div class="notice">💡 Las sesiones de estudio se colocan primero en espacios libres. Los exámenes cercanos y difíciles reciben más tiempo.</div>
+<div class="panel"><h2>Horario de estudio recomendado</h2><div id="studyPlan"></div></div>
+</section>
+
+<section id="horario" class="section" style="display:none">
+<header><div><h1>🗓️ Mi horario semanal</h1><div class="muted">Introduce tus clases, actividades u otros compromisos. Se repite cada semana.</div></div></header>
+<div class="panel"><h2>Agregar bloque fijo</h2><div class="form">
+<div><label>Día</label><select id="fixedDay"><option value="1">Lunes</option><option value="2">Martes</option><option value="3">Miércoles</option><option value="4">Jueves</option><option value="5">Viernes</option><option value="6">Sábado</option><option value="0">Domingo</option></select></div>
+<div><label>Nombre</label><input id="fixedName" placeholder="Ej. Colegio"></div>
+<div><label>Hora de inicio</label><input id="fixedStart" type="time" value="08:00"></div>
+<div><label>Hora de fin</label><input id="fixedEnd" type="time" value="14:00"></div>
+<div class="full"><button class="btn" onclick="addFixed()">Agregar al horario</button></div>
+</div></div>
+<div class="panel"><h2>📅 Semana típica</h2><div class="week" id="weeklyGrid"></div></div>
+</section>
+
+<section id="examenes" class="section" style="display:none">
+<header><div><h1>📝 Mis exámenes</h1><div class="muted">Registra tus exámenes y TaskMind preparará sesiones antes de ellos.</div></div></header>
+<div class="panel"><h2>Agregar examen</h2><div class="form">
+<div><label>Materia</label><input id="examSubject" placeholder="Ej. Matemática"></div>
+<div><label>Fecha</label><input id="examDate" type="date"></div>
+<div><label>Hora</label><input id="examTime" type="time" value="08:00"></div>
+<div><label>Dificultad / preparación</label><select id="examLevel"><option value="1">Fácil / estoy preparado</option><option value="2" selected>Media</option><option value="3">Difícil / necesito practicar</option></select></div>
+<div class="full"><label>Temas que entran</label><textarea id="examTopics" rows="3" placeholder="Ej. Fracciones, ecuaciones y problemas"></textarea></div>
+<div class="full"><button class="btn" onclick="addExam()">Guardar examen</button></div>
+</div></div>
+<div class="panel"><h2>Próximos exámenes</h2><div id="examList"></div></div>
+</section>
+
+<section id="calendario" class="section" style="display:none">
+<header><div><h1>📅 Calendario inteligente</h1><div class="muted">🎯 estudio · 🔴 examen · 🔵 hoy</div></div></header>
+<div class="panel"><h2 id="calTitle"></h2><div class="calendar" id="calendar"></div></div>
+</section>
+</main></div>
+
+<script>
+const TASK='tm3_tasks',FIX='tm3_fixed',EX='tm3_exams';
+let tasks=JSON.parse(localStorage.getItem(TASK)||'[]');
+let fixed=JSON.parse(localStorage.getItem(FIX)||'[]');
+let exams=JSON.parse(localStorage.getItem(EX)||'[]');
+const today=new Date();today.setHours(0,0,0,0);
+const iso=d=>d.toISOString().slice(0,10);
+const fmt=s=>new Date(s+'T00:00:00').toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short'});
+const days={1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado',0:'Domingo'};
+document.getElementById('nowText').textContent=new Date().toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'});
+
+function persist(){localStorage.setItem(TASK,JSON.stringify(tasks));localStorage.setItem(FIX,JSON.stringify(fixed));localStorage.setItem(EX,JSON.stringify(exams));render()}
+function dayNum(s){return new Date(s+'T00:00:00').getDay()}
+function mins(t){let [h,m]=t.split(':').map(Number);return h*60+m}
+function timeStr(m){m=Math.round(m/30)*30;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function addDays(d,n){let x=new Date(d);x.setDate(x.getDate()+n);return x}
+function fixedOn(date){return fixed.filter(x=>Number(x.day)===date.getDay())}
+function occupied(date){
+ return fixedOn(date).map(x=>[mins(x.start),mins(x.end)])
+}
+function freeSlots(date){
+ let busy=occupied(date).sort((a,b)=>a[0]-b[0]), out=[], start=16*60, end=21*60;
+ // Study is normally planned after school; weekends use a wider daytime window.
+ if(date.getDay()===0||date.getDay()===6){start=9*60;end=20*60}
+ for(let b of busy){if(b[0]>start)out.push([start,Math.min(b[0],end)]);start=Math.max(start,b[1]);if(start>=end)break}
+ if(start<end)out.push([start,end]);
+ return out.filter(x=>x[1]-x[0]>=30)
+}
+function examScore(e){
+ let d=Math.max(0,Math.ceil((new Date(e.date+'T00:00:00')-today)/86400000));
+ return Number(e.level)*5+(d<=2?15:d<=5?10:d<=10?5:0);
+}
+function buildStudyPlan(){
+ let events=[];
+ // Exam study blocks: closer/harder exams get more total preparation.
+ for(let e of exams){
+  let daysLeft=Math.ceil((new Date(e.date+'T00:00:00')-today)/86400000);
+  if(daysLeft<0)continue;
+  let total=Number(e.level)===3?6:Number(e.level)===2?4:2;
+  let until=Math.min(10,Math.max(1,daysLeft));
+  for(let i=1;i<=until;i++){
+   let d=addDays(today,i-1);if(d>=new Date(e.date+'T00:00:00'))break;
+   events.push({type:'exam',subject:e.subject,date:iso(d),hours:Math.min(1.5,total),examId:e.id,score:examScore(e)});
+   total-=Math.min(1.5,total);if(total<=0)break;
+  }
+ }
+ // Regular tasks use remaining capacity.
+ tasks.filter(t=>!t.done).forEach(t=>{
+  let remain=Number(t.time), due=new Date(t.due+'T00:00:00'), d=addDays(today,0);
+  let candidates=[];
+  while(d<due && candidates.length<21){if(d>=today&&freeSlots(d).length)candidates.push(new Date(d));d=addDays(d,1)}
+  candidates.sort((a,b)=>{let da=(due-a)/86400000,db=(due-b)/86400000;return db-da});
+  for(let date of candidates){
+   if(remain<=0)break;
+   let available=freeSlots(date).reduce((s,x)=>s+(x[1]-x[0]),0)/60;
+   let use=Math.min(remain,available,1.5);
+   if(use>0){events.push({type:'task',subject:t.name,date:iso(date),hours:use,taskId:t.id,score:Number(t.priority)*4+Number(t.difficulty)*2});remain-=use}
+  }
+  if(remain>0){let d2=addDays(due,-1);events.push({type:'task',subject:t.name,date:iso(d2),hours:remain,taskId:t.id,score:20})}
+ });
+ // Keep one study session per item/day and don't exceed practical daily load.
+ let byDay={};
+ events.sort((a,b)=>b.score-a.score);
+ for(let e of events){
+  if(!byDay[e.date])byDay[e.date]=0;
+  let cap=4; // maximum recommended study per day
+  let use=Math.min(e.hours,Math.max(0,cap-byDay[e.date]));
+  if(use>0){e.hours=use;byDay[e.date]+=use}
+ }
+ return events.filter(e=>e.hours>0).sort((a,b)=>a.date.localeCompare(b.date)||b.score-a.score);
+}
+function focus(){
+ let plan=buildStudyPlan(), p=plan.find(x=>x.date===iso(today));
+ if(!p)return null;
+ let all=plan.filter(x=>x.date===iso(today));
+ return all.sort((a,b)=>b.score-a.score)[0]
+}
+function addTask(){
+ let n=taskName.value.trim(),d=taskDue.value;
+ if(!n||!d){alert('Completa la tarea y la fecha.');return}
+ tasks.push({id:Date.now(),name:n,due:d,time:taskTime.value,diff:taskDiff.value,priority:taskPriority.value,notes:taskNotes.value,done:false});
+ taskName.value='';taskDue.value='';taskNotes.value='';persist();show('inicio')
+}
+function addFixed(){
+ if(!fixedName.value||!fixedStart.value||!fixedEnd.value){alert('Completa todos los campos.');return}
+ if(mins(fixedEnd.value)<=mins(fixedStart.value)){alert('La hora de fin debe ser después de la de inicio.');return}
+ fixed.push({id:Date.now(),day:fixedDay.value,name:fixedName.value,start:fixedStart.value,end:fixedEnd.value});fixedName.value='';persist()
+}
+function addExam(){
+ if(!examSubject.value||!examDate.value){alert('Completa materia y fecha.');return}
+ exams.push({id:Date.now(),subject:examSubject.value,date:examDate.value,time:examTime.value,level:examLevel.value,topics:examTopics.value});examSubject.value='';examDate.value='';examTopics.value='';persist()
+}
+function completeTask(id){let t=tasks.find(x=>x.id===id);t.done=!t.done;persist()}
+function removeTask(id){tasks=tasks.filter(x=>x.id!==id);persist()}
+function removeFixed(id){fixed=fixed.filter(x=>x.id!==id);persist()}
+function removeExam(id){exams=exams.filter(x=>x.id!==id);persist()}
+function taskRow(t){
+ let plan=buildStudyPlan().filter(x=>x.taskId===t.id).map(x=>`${fmt(x.date)} ${x.hours}h`).join(' · ')||'—';
+ return `<div class="task"><div>${t.done?'✅ ':''}<b>${t.name}</b></div><div>Entrega ${fmt(t.due)}</div><div>${t.time}h</div><div><span class="pill ${t.diff==3?'high':t.diff==2?'medium':'low'}">${['','Baja','Media','Alta'][t.diff]}</span></div><div>🎯 ${plan}</div><div><button class="btn secondary" onclick="completeTask(${t.id})">${t.done?'Reabrir':'Completar'}</button></div></div>`
+}
+function render(){
+ let active=tasks.filter(t=>!t.done),plan=buildStudyPlan(),f=focus();
+ activeCount.textContent=active.length;examCount.textContent=exams.filter(e=>Math.ceil((new Date(e.date)-today)/86400000)>=0).length;studyHours.textContent=plan.reduce((s,x)=>s+x.hours,0).toFixed(1)+'h';urgentCount.textContent=active.filter(t=>Number(t.priority)===3).length;
+ todayFocus.innerHTML=f?`<div class="recommend"><b>${f.type==='exam'?'📝':'📚'} ${f.subject}</b><p class="muted">${f.type==='exam'?'Preparación para examen':'Avance de tarea'} · ${f.hours} h</p><p>Hoy es uno de los mejores momentos para avanzar porque TaskMind está considerando tu horario y tus próximas entregas.</p></div>`:'<div class="empty">🎉 No hay estudio urgente programado para hoy.</div>';
+ nextSteps.innerHTML=plan.slice(0,6).map(x=>`<div><span><b>${fmt(x.date)}</b><br>${x.type==='exam'?'📝':'📚'} ${x.subject}</span><span>${x.hours}h</span></div>`).join('')||'<div class="empty">Agrega tareas o exámenes.</div>';
+ let ws='';for(let i=0;i<7;i++){let d=addDays(today,i),key=iso(d),h=plan.filter(x=>x.date===key).reduce((s,x)=>s+x.hours,0);ws+=`<div class="line"><span><b>${i===0?'Hoy':days[d.getDay()]}</b> · ${fmt(key)}</span><span>${h.toFixed(1)} h de estudio</span></div>`}weekSummary.innerHTML=ws;
+ tasksList.innerHTML=tasks.map(taskRow).join('')||'<div class="empty">No hay tareas.</div>';
+ renderStudy(plan);renderWeekly();renderExams();renderCalendar()
+}
+function renderStudy(plan){
+ let html=plan.map(x=>`<div class="daybox" style="padding:13px;background:#0b1c30;border:1px solid #28445f;border-radius:12px;margin:8px 0"><div style="display:flex;justify-content:space-between"><b>${fmt(x.date)}</b><span>${x.hours} h</span></div><div style="margin-top:7px">${x.type==='exam'?'📝 Preparar examen: ':'📚 Tarea: '}${x.subject}</div></div>`).join('');
+ studyPlan.innerHTML=html||'<div class="empty">No hay sesiones todavía.</div>'
+}
+function renderWeekly(){
+ let html='';[1,2,3,4,5,6,0].forEach(d=>{html+=`<div class="daycol"><div class="dayhead">${days[d]}</div>`;fixed.filter(x=>Number(x.day)===d).sort((a,b)=>a.start.localeCompare(b.start)).forEach(x=>html+=`<div class="slot">${x.start}–${x.end}<br><b>${x.name}</b><br><button class="btn danger" style="padding:4px 7px;margin-top:5px;font-size:10px" onclick="removeFixed(${x.id})">Eliminar</button></div>`);html+=`<div class="slot free">Huecos libres se usarán para estudiar 🎯</div></div>`});weeklyGrid.innerHTML=html
+}
+function renderExams(){
+ examList.innerHTML=exams.sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{let daysLeft=Math.ceil((new Date(e.date+'T00:00:00')-today)/86400000);return `<div class="examcard"><div class="top"><div><b>📝 ${e.subject}</b><div class="status">${fmt(e.date)} · ${e.time} · ${daysLeft>=0?'faltan '+daysLeft+' días':'ya pasó'}</div></div><button class="btn danger" onclick="removeExam(${e.id})">Eliminar</button></div><p class="muted">${e.topics||'Sin temas especificados.'}</p><div class="progress"><i style="width:${Math.min(100,Math.max(5,(10-daysLeft)*10))}%"></i></div></div>`}).join('')||'<div class="empty">Todavía no registras exámenes.</div>'
+}
+function renderCalendar(){
+ let y=today.getFullYear(),m=today.getMonth(),first=new Date(y,m,1),num=new Date(y,m+1,0).getDate(),p=buildStudyPlan();
+ calTitle.textContent=new Date(y,m,1).toLocaleDateString('es-PE',{month:'long',year:'numeric'});
+ let h=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'].map(x=>`<div class="muted" style="text-align:center">${x}</div>`).join(''),off=(first.getDay()+6)%7;for(let i=0;i<off;i++)h+='<div></div>';
+ for(let d=1;d<=num;d++){let date=new Date(y,m,d),key=iso(date),st=p.filter(x=>x.date===key),ex=exams.filter(e=>e.date===key);h+=`<div class="calday ${key===iso(today)?'today':''} ${ex.length?'exam':''} ${st.length?'study':''}">${d}${ex.length?'<small>📝 examen</small>':''}${st.length?`<small>🎯 ${st.reduce((s,x)=>s+x.hours,0).toFixed(1)}h</small>`:''}</div>`}calendar.innerHTML=h
+}
+function show(id,btn){
+ document.querySelectorAll('main>section').forEach(s=>s.style.display='none');document.getElementById(id).style.display='block';
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+ let idx={inicio:0,tareas:1,estudio:2,horario:3,examenes:4,calendario:5}[id];document.querySelectorAll('.nav button')[idx].classList.add('active');render()
+}
+render();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
