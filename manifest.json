@@ -1,13 +1,6 @@
 {
-  "name": "TaskMind",
-  "short_name": "TaskMind",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#071525",
-  "background_color": "#071525",
-  "icons": [
-    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
-  ]
+  "name":"TaskMind","short_name":"TaskMind","start_url":"./","scope":"./",
+  "display":"standalone","orientation":"portrait",
+  "theme_color":"#071525","background_color":"#071525",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }

@@ -1,14 +1,7 @@
-# TaskMind v4
+# TaskMind v5
 
-Versión preparada para GitHub Pages y teléfonos.
-
-### Mejoras de v4
-- Navegación inferior visible en celulares.
-- Botón flotante para agregar una tarea rápidamente.
-- Se mantienen tareas, exámenes, horario, plan de estudio y calendario.
-- PWA instalable desde el navegador.
-- Datos guardados localmente en el dispositivo.
-
-### Publicar
-Sube los archivos al repositorio de GitHub y usa:
-Settings → Pages → Deploy from a branch → main → / (root).
+Versión móvil corregida:
+- Menú visible en la parte superior en teléfonos.
+- Botón grande para agregar tareas.
+- Navegación inferior conservada.
+- PWA con caché actualizado para evitar que el teléfono mantenga la versión anterior.

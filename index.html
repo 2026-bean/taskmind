@@ -57,6 +57,40 @@ main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-wid
   .mobile-nav button{font-size:9px}
   .mobile-nav button span{font-size:16px}
 }
+
+.mobile-quick-menu{display:none}
+@media(max-width:950px){
+  .mobile-quick-menu{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding:10px 0 14px;
+    margin:0 0 4px;
+    scrollbar-width:none;
+  }
+  .mobile-quick-menu::-webkit-scrollbar{display:none}
+  .mobile-quick-menu button{
+    flex:0 0 auto;
+    border:1px solid #29435f;
+    background:#10253d;
+    color:#dce8f7;
+    border-radius:12px;
+    padding:10px 13px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .mobile-quick-menu button.primary{
+    background:#496cf0;
+    border-color:#496cf0;
+    color:white;
+  }
+}
+
+.mobile-home-add{display:none}
+@media(max-width:950px){
+  .mobile-home-add{display:block;margin:10px 0 18px}
+  .mobile-home-add .btn{width:100%;padding:13px}
+}
 </style>
 </head>
 <body>
@@ -85,6 +119,16 @@ main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-wid
 </nav>
 <button class="mobile-add" onclick="show('agregar')" aria-label="Agregar tarea">＋</button>
 
+
+<div class="mobile-quick-menu" aria-label="Menú de TaskMind">
+  <button class="primary" onclick="show('tareas')">☑️ Tareas</button>
+  <button onclick="show('estudio')">📚 Estudio</button>
+  <button onclick="show('horario')">🗓️ Horario</button>
+  <button onclick="show('examenes')">📝 Exámenes</button>
+  <button onclick="show('calendario')">📅 Calendario</button>
+  <button class="primary" onclick="show('agregar')">＋ Agregar tarea</button>
+</div>
+
 <main>
 <section id="inicio" class="section">
 <header><div><h1>¡Hola! 👋</h1><div class="muted">Tu semana organizada entre tareas, clases y exámenes.</div></div><div class="muted" id="nowText"></div></header>
@@ -95,7 +139,8 @@ main{margin-left:240px;width:100%;padding:30px;max-width:1400px}.section{max-wid
 <div class="card">🔥<b id="urgentCount">0</b><span class="muted">Prioridades altas</span></div>
 </div>
 <div class="grid">
-<div class="panel"><h2>🎯 ¿Qué deberías hacer hoy?</h2><div id="todayFocus"></div></div>
+<div class="panel"><h2>🎯 ¿Qué deberías hacer hoy?</h2>
+<div class="mobile-home-add"><button class="btn" onclick="show('agregar')">＋ Agregar una tarea</button></div><div id="todayFocus"></div></div>
 <div class="panel"><h2>🧠 Próximos pasos</h2><div id="nextSteps" class="plan"></div></div>
 </div>
 <div class="panel"><h2>📊 Tu semana de estudio</h2><div id="weekSummary"></div></div>
